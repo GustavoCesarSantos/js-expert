@@ -1,0 +1,23 @@
+[
+  {
+    "id": "79a5ff1c-eba0-4332-ae47-e0c29c6b0145",
+    "name": "Explorer",
+    "releaseYear": 2022,
+    "available": true,
+    "gasAvailable": true
+  },
+  {
+    "id": "82d2d7af-8432-43a1-98ad-d744c55143b6",
+    "name": "Model S",
+    "releaseYear": 2022,
+    "available": true,
+    "gasAvailable": true
+  },
+  {
+    "id": "d3d0a38a-d822-4ac5-b545-e6c4fd23ea34",
+    "name": "Model S",
+    "releaseYear": 2021,
+    "available": true,
+    "gasAvailable": true
+  }
+]
