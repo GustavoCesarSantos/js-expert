@@ -51,4 +51,45 @@ Supervisor.prototype.profitShare = () => "profitShare**";
 
 function Manager() {}
 Manager.prototype = Object.create(Supervisor.prototype);
-Supervisor.prototype.monthlyBonus = () => "monthlyBonus";
+Manager.prototype.monthlyBonus = () => "monthlyBonus";
+
+// Podemos chamar via prototype, mas se tentar chamar direto da erro!
+// console.log("Manager.prototype.salary()", Manager.salary());
+console.log("Manager.prototype.salary()", Manager.prototype.salary());
+
+// Se não chamar utilizar o "new" , o primeiro __proto__ vai ser sempre
+//a instancia de Function, sem herdar nossas classes.
+// Para acessar as classes sem  new, pode acessar direto via prototype
+console.log(
+  "Manager.prototype.__proto__ === Supervisor.prototype",
+  Manager.prototype.__proto__ === Supervisor.prototype
+);
+deepStrictEqual(Manager.prototype.__proto__, Supervisor.prototype);
+
+// Quando chamamos com o "new", o __proto__ recebe o prototype atual do objeto
+console.log(
+  "new Manager().__proto__: %s, new Maganer().salary: %s",
+  new Manager().__proto__,
+  new Manager().salary()
+);
+console.log(
+  "Supervisor.prototype === new Manager().__proto__.__proto__",
+  Supervisor.prototype === new Manager().__proto__.__proto__
+);
+deepStrictEqual(Supervisor.prototype, new Manager().__proto__.__proto__);
+
+const manager = new Manager();
+console.log("Manager Salary:", manager.salary());
+console.log("Manager Profit Share:", manager.profitShare());
+console.log("Manager Monthly Bonus:", manager.monthlyBonus());
+deepStrictEqual(manager.__proto__, Manager.prototype);
+deepStrictEqual(manager.__proto__.__proto__, Supervisor.prototype);
+deepStrictEqual(manager.__proto__.__proto__.__proto__, Employee.prototype);
+deepStrictEqual(
+  manager.__proto__.__proto__.__proto__.__proto__,
+  Object.prototype
+);
+deepStrictEqual(
+  manager.__proto__.__proto__.__proto__.__proto__.__proto__,
+  null
+);
