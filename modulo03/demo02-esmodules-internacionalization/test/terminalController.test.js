@@ -3,7 +3,7 @@ const { describe, it } = mocha;
 import chai from "chai";
 const { expect } = chai;
 import sinon from "sinon";
-const { spy } = sinon;
+const { createSandbox } = sinon;
 
 import TerminalController from "../src/terminalController.js";
 
@@ -32,7 +32,17 @@ class ReadLineHelperDummy {
   }
 }
 
+let sandbox = {};
+
 describe("Terminal Controller", () => {
+  beforeEach(() => {
+    sandbox = createSandbox();
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+  });
+
   it("should create a terminal controller", () => {
     const table = new TableControllerDummy();
     const readline = new ReadLineHelperDummy();
@@ -47,7 +57,7 @@ describe("Terminal Controller", () => {
     const table = new TableControllerDummy();
     const readline = new ReadLineHelperDummy();
     const terminal = new TerminalController(table, readline);
-    const spyResult = spy(table, table.initializeTable.name);
+    const spyResult = sandbox.spy(table, table.initializeTable.name);
     terminal.initializeTerminal({}, "teste");
     expect(terminal.terminal).to.be.not.equal({});
     expect(spyResult.callCount).to.be.deep.equal(1);
@@ -58,7 +68,7 @@ describe("Terminal Controller", () => {
     const readline = new ReadLineHelperDummy();
     const terminal = new TerminalController(table, readline);
     terminal.initializeTerminal({}, "teste");
-    const spyResult = spy(readline, readline.close.name);
+    const spyResult = sandbox.spy(readline, readline.close.name);
     terminal.closeTerminal();
     expect(spyResult.callCount).to.be.deep.equal(1);
   });
@@ -68,7 +78,7 @@ describe("Terminal Controller", () => {
     const readline = new ReadLineHelperDummy();
     const terminal = new TerminalController(table, readline);
     terminal.initializeTerminal({}, "teste");
-    const spyResult = spy(readline, readline.question.name);
+    const spyResult = sandbox.spy(readline, readline.question.name);
     terminal.question("teste");
     expect(spyResult.callCount).to.be.deep.equal(1);
   });
@@ -78,7 +88,7 @@ describe("Terminal Controller", () => {
     const readline = new ReadLineHelperDummy();
     const terminal = new TerminalController(table, readline);
     terminal.initializeTerminal({}, "teste");
-    const spyResult = spy(readline, readline.question.name);
+    const spyResult = sandbox.spy(readline, readline.question.name);
     terminal.question();
     expect(spyResult.callCount).to.be.deep.equal(1);
   });
