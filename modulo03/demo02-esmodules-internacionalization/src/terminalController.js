@@ -1,5 +1,3 @@
-import DraftLog from "draftlog";
-
 export default class TerminalController {
   constructor(tableController, readlineHelper) {
     this.terminal = {};
@@ -8,7 +6,6 @@ export default class TerminalController {
   }
 
   initializeTerminal(database, language) {
-    DraftLog(console).addLineListener(process.stdin);
     this.terminal = this.readlineHelper.createInterface();
     this.tableController.initializeTable(database, language);
   }
