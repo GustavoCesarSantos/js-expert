@@ -3,14 +3,21 @@ import Person from "./person.js";
 import TableController from "./tableController.js";
 import TerminalController from "./terminalController.js";
 import { save } from "./repository.js";
-import ReadLineHelper from "./readlineHelper";
+import ReadLineHelper from "./readlineHelper.js";
+import ChalkTableHelper from "./chalkTableHelper.js";
+import DraftLogHelper from "./draftLogHelper.js";
+import ChalkHelper from "./chalkHelper.js";
 
 const default_lang = "pt-BR";
 const stop_term = ":q";
-const table = new TableController();
-const readline = new ReadLineHelper();
-const terminal = new TerminalController(table, readline);
+const table = new TableController(
+  ChalkTableHelper,
+  DraftLogHelper,
+  ChalkHelper
+);
+const terminal = new TerminalController(table, ReadLineHelper);
 terminal.initializeTerminal(database, default_lang);
+
 async function mainLoop() {
   try {
     const answer = await terminal.question("What ?");
