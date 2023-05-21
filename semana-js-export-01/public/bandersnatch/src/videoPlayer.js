@@ -37,7 +37,7 @@ class VideoPlayer {
     return async (_) => {
       this.sourceBuffer = mediaSource.addSourceBuffer(this.manifestJSON.codec);
       const selected = (this.selected = this.manifestJSON.intro);
-      mediaSource.duration = paraseFloat(this.videoDuration);
+      mediaSource.duration = this.videoDuration;
       await this.fileDownload(selected.url);
       setInterval(this.waitForQuestion.bind(this), 200);
     };
@@ -61,7 +61,7 @@ class VideoPlayer {
       hostTag: this.manifestJSON.hostTag,
     };
     const url = this.network.parseManifestURL(prepareUrl);
-    this.network.getProperResolution(url);
+    return this.network.getProperResolution(url);
   }
 
   async nextChunk(data) {
@@ -99,25 +99,25 @@ class VideoPlayer {
     const finalUrl = this.network.parseManifestURL(prepareUrl);
     this.setVideoPlayerDuration(finalUrl);
     const data = await this.network.fetchFile(finalUrl);
-    return await this.processBufferSegments(data);
+    return this.processBufferSegments(data);
   }
 
   setVideoPlayerDuration(finalURL) {
     const bars = finalURL.split("/");
     const [name, videoDuration] = bars[bars.length - 1].split("-");
-    this.videoDuration += videoDuration;
+    this.videoDuration += parseFloat(videoDuration);
   }
 
   async processBufferSegments(allSegments) {
     const sourceBuffer = this.sourceBuffer;
     sourceBuffer.appendBuffer(allSegments);
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const updateEnd = (_) => {
         sourceBuffer.removeEventListener("updateend", updateEnd);
         sourceBuffer.timestampOffset = this.videoDuration;
         return resolve();
       };
-      sourceBuffer.addEventListener("updateend", () => {});
+      sourceBuffer.addEventListener("updateend", updateEnd);
       sourceBuffer.addEventListener("error", reject);
     });
   }
