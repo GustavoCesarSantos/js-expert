@@ -1,8 +1,15 @@
-console.log("I'm alive!")
-postMessage("Ready")
+import Service from './service.js'
+
+const service = new Service()
 postMessage({ eventType: "alive" })
 onmessage = ({ data }) => {
-    console.log("hey form worker", data)
-    postMessage({ eventType: "progress" })
-    postMessage({ eventType: "ocurrenceUpdate" })
+    const { query, file } = data
+    service.processFile({
+        query,
+        file,
+        onOcurrenceUpdate: (args) => {
+            postMessage({ eventType: "ocurrenceUpdate", ...args })
+        },
+        onProgress: (total) => postMessage({ eventType: "progress", total })
+    })
 }
