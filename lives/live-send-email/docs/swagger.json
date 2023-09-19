@@ -1,0 +1,177 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Send e-mail service",
+    "description": "service for send e-mails in the easy way",
+    "contact": {
+      "name": "support",
+      "email": "gustavocs789@gmail.com"
+    },
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/send-email": {
+      "post": {
+        "summary": "Send e-mail",
+        "description": "Send e-mail to the destination address",
+        "requestBody": {
+          "required": true,
+          "description": "E-mail infos",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/sendEmailRequestBody"
+              },
+              "examples": {
+                "email": {
+                  "$ref": "#/components/examples/sendEmailRequestBody"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Email successfully sent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/sendEmailResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid send email request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/defaultErrorStructure"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/invalidRequestError"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Syntactically invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/defaultErrorStructure"
+                },
+                "examples": {
+                  "success": {
+                    "$ref": "#/components/examples/syntacticallyInvalidRequest"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "sendEmailRequestBody": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "description": "email origin",
+            "type": "string"
+          },
+          "to": {
+            "description": "email destination",
+            "type": "string"
+          },
+          "subject": {
+            "description": "email subject",
+            "type": "string"
+          },
+          "text": {
+            "description": "email body in plain text",
+            "type": "string"
+          },
+          "html": {
+            "description": "email body in html",
+            "type": "string"
+          }
+        },
+        "required": ["from", "to", "subject"]
+      },
+      "defaultErrorStructure": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "error status",
+            "type": "string"
+          },
+          "message": {
+            "description": "error message",
+            "type": "string"
+          },
+          "path": {
+            "description": "error path",
+            "type": "string"
+          },
+          "received": {
+            "description": "invalid input received",
+            "type": "string"
+          },
+          "expected": {
+            "description": "expected valid input",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "examples": {
+      "sendEmailRequestBody": {
+        "value": {
+          "from": "test@sender.com",
+          "to": "teste@receiver.com",
+          "subject": "Amazing test subject",
+          "text": "Hi, how are you ?",
+          "html": "<p>Congrats it is your <strong>first email</strong>!</p>"
+        }
+      },
+      "sendEmailResponse": {
+        "value": {
+          "status": "Email successfully sent"
+        }
+      },
+      "invalidRequestError": {
+        "value": {
+          "status": "invalid_request",
+          "message": "email from field not found",
+          "path": "request.body.from",
+          "received": "undefined",
+          "expected": "string"
+        }
+      },
+      "syntacticallyInvalidRequest": {
+        "value": {
+          "status": "syntactically_invalid_request",
+          "message": "invalid email from field",
+          "path": "request.body.from",
+          "received": "number",
+          "expected": "string"
+        }
+      }
+    }
+  }
+}
