@@ -44,7 +44,7 @@
                   }
                 },
                 "examples": {
-                  "success": {
+                  "content": {
                     "$ref": "#/components/examples/sendEmailResponse"
                   }
                 }
@@ -59,8 +59,8 @@
                   "$ref": "#/components/schemas/defaultErrorStructure"
                 },
                 "examples": {
-                  "success": {
-                    "$ref": "#/components/examples/invalidRequestError"
+                  "content": {
+                    "$ref": "#/components/examples/invalidRequest"
                   }
                 }
               }
@@ -74,8 +74,23 @@
                   "$ref": "#/components/schemas/defaultErrorStructure"
                 },
                 "examples": {
-                  "success": {
+                  "content": {
                     "$ref": "#/components/examples/syntacticallyInvalidRequest"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/defaultErrorStructure"
+                },
+                "examples": {
+                  "content": {
+                    "$ref": "#/components/examples/intenalServerError"
                   }
                 }
               }
@@ -154,7 +169,7 @@
           "status": "Email successfully sent"
         }
       },
-      "invalidRequestError": {
+      "invalidRequest": {
         "value": {
           "status": "invalid_request",
           "message": "email from field not found",
@@ -170,6 +185,15 @@
           "path": "request.body.from",
           "received": "number",
           "expected": "string"
+        }
+      },
+      "intenalServerError": {
+        "value": {
+          "status": "internal_server_error",
+          "message": "An internal server error occurred",
+          "path": "",
+          "received": "",
+          "expected": ""
         }
       }
     }
