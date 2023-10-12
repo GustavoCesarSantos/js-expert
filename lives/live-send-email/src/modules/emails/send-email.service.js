@@ -1,14 +1,14 @@
 export class SendEmailService {
-  #emailProviderMain;
-  #emailProviderSecondary;
+  #mainEmailProvider;
+  #secondaryEmailProvider;
 
-  constructor({ emailProviderMain, emailProviderSecondary }) {
-    this.#emailProviderMain = emailProviderMain;
-    this.#emailProviderSecondary = emailProviderSecondary;
+  constructor({ mainEmailProvider, secondaryEmailProvider }) {
+    this.#mainEmailProvider = mainEmailProvider;
+    this.#secondaryEmailProvider = secondaryEmailProvider;
   }
 
   async execute(email) {
-    const error = await this.#emailProviderMain.send(email);
-    if (error) await this.#emailProviderSecondary.send(email);
+    const error = await this.#mainEmailProvider.send(email);
+    if (error) await this.#secondaryEmailProvider.send(email);
   }
 }

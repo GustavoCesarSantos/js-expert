@@ -8,8 +8,8 @@ const sesClient = new SESClient();
 export class EmailServiceFactory {
   static makeSendEmailService() {
     return new SendEmailService({
-      emailProviderMain: resendClient,
-      emailProviderSecondary: sesClient,
+      mainEmailProvider: resendClient,
+      secondaryEmailProvider: sesClient,
     });
   }
 }

@@ -9,8 +9,21 @@ class SendEmailServiceDummy {
   execute() {}
 }
 
+class SendEmailErrorServiceDummy {
+  execute() {
+    throw new Error("Unexpected error");
+  }
+}
+
 const makeSut = () => {
   const sendEmailServiceDummy = new SendEmailServiceDummy();
+  return new SendEmailController({
+    sendEmailService: sendEmailServiceDummy,
+  });
+};
+
+const makeSutWithError = () => {
+  const sendEmailServiceDummy = new SendEmailErrorServiceDummy();
   return new SendEmailController({ sendEmailServiceDummy });
 };
 
@@ -26,13 +39,9 @@ describe("Send email controller", () => {
     controller = makeSut();
   });
 
-  test("teste", async () => {
+  test("Should return status 400 when invalid request error occur", async () => {
     const errorObject = {
       status: "invalid_request",
-      message: "email not found",
-      path: "request.body.from",
-      received: "number",
-      expected: "string",
     };
     jest.spyOn(Guard, "againstInvalidEmail").mockImplementation(() => {
       return errorObject;
@@ -42,5 +51,51 @@ describe("Send email controller", () => {
     await controller.handle(request, response);
     expect(response.status).toHaveBeenCalledWith(400);
     expect(response.json).toHaveBeenCalledWith(errorObject);
+  });
+
+  test("Should return status 422 when syntactically invalid request error occur", async () => {
+    const errorObject = {
+      status: "syntactically_invalid_request",
+    };
+    jest.spyOn(Guard, "againstInvalidEmail").mockImplementation(() => {
+      return errorObject;
+    });
+    const request = { body: {} };
+    const response = mockResponse();
+    await controller.handle(request, response);
+    expect(response.status).toHaveBeenCalledWith(422);
+    expect(response.json).toHaveBeenCalledWith(errorObject);
+  });
+
+  test("Should return status 500 when a unexpected error occur", async () => {
+    const errorObject = {
+      status: "internal_server_error",
+      message: "An internal server error occurred",
+      path: "",
+      received: "",
+      expected: "",
+    };
+    jest.spyOn(Guard, "againstInvalidEmail").mockImplementation(() => {
+      return { status: "success" };
+    });
+    const controllerWithError = makeSutWithError();
+    const request = { body: {} };
+    const response = mockResponse();
+    await controllerWithError.handle(request, response);
+    expect(response.status).toHaveBeenCalledWith(500);
+    expect(response.json).toHaveBeenCalledWith(errorObject);
+  });
+
+  test("Should return status 200", async () => {
+    jest.spyOn(Guard, "againstInvalidEmail").mockImplementation(() => {
+      return { status: "success" };
+    });
+    const request = { body: {} };
+    const response = mockResponse();
+    await controller.handle(request, response);
+    expect(response.status).toHaveBeenCalledWith(200);
+    expect(response.json).toHaveBeenCalledWith({
+      status: "Email successfully sent",
+    });
   });
 });

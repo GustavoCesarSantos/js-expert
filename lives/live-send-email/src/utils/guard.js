@@ -3,9 +3,9 @@ export class Guard {
     if (!email) {
       return {
         status: "invalid_request",
-        message: "email not found",
-        path: "request.body.from",
-        received: `${typeof email.from}`,
+        message: "email object not provided",
+        path: "request.body",
+        received: "undefined",
         expected: "string",
       };
     }
