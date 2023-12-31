@@ -1,9 +1,17 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { FileHelper } from "./utils/fileHelper.js";
 import { logger } from "./utils/pinoLogger.js";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const defaultFolder = resolve(__dirname, "../", "downloads");
 export class Routes {
   io;
 
-  constructor() {}
+  constructor(folder = defaultFolder) {
+    this.folder = folder;
+  }
 
   setSocketInstance(io) {
     this.io = io;
@@ -15,7 +23,7 @@ export class Routes {
 
   async options(request, response) {
     response.writeHead(204);
-    response.end("Hello World");
+    response.end();
   }
 
   async post(request, response) {
@@ -24,7 +32,7 @@ export class Routes {
   }
 
   async get(request, response) {
-    logger.info("GET");
+    const files = await FileHelper.getFilesStatus(this.folder);
     response.end();
   }
 
