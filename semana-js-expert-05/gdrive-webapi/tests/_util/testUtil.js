@@ -1,0 +1,14 @@
+import { Readable } from "node:stream";
+
+export default class TestUtil {
+  static generateReadableStream(data) {
+    return new Readable({
+      async read() {
+        for (const item of data) {
+          this.push(item);
+        }
+        this.push(null);
+      },
+    });
+  }
+}

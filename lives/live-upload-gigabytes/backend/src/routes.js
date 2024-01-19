@@ -1,7 +1,7 @@
 import url from "node:url";
+import { pipeline } from "node:stream/promises";
 
 import { UploadHandler } from "./uploadHandler.js";
-import { pipelineAsync } from "./util.js";
 
 export class Routes {
     #io;
@@ -12,28 +12,31 @@ export class Routes {
 
     async options(request, response) {
         response.writeHead(204, {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'OPTIONS, POST'
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS, POST",
         });
         response.end();
     }
+
     async post(request, response) {
         const { headers } = request;
-        const { query: { socketId } } = url.parse(request.url, true);
+        const {
+            query: { socketId },
+        } = url.parse(request.url, true);
         const redirectTo = headers.origin;
         const uploadHandler = new UploadHandler(this.#io, socketId);
         const onFinish = (response, redirectTo) => () => {
-           response.writeHead(303, {
-               Connection: 'close',
-               Location: `${redirectTo}?msg=Files uploaded with success`
-           }); 
+            response.writeHead(303, {
+                Connection: "close",
+                Location: `${redirectTo}?msg=Files uploaded with success`,
+            });
             response.end();
-        }
-        const busboyInstance = uploadHandler.registerEvents(headers, onFinish(response, redirectTo));
-        await pipelineAsync(
-            request,
-            busboyInstance
+        };
+        const busboyInstance = uploadHandler.registerEvents(
+            headers,
+            onFinish(response, redirectTo),
         );
-        logger.info('Request finished with success');
+        await pipeline(request, busboyInstance);
+        logger.info("Request finished with success");
     }
 }

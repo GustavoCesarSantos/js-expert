@@ -19,7 +19,7 @@ const io = new Server(httpServer, {
   },
 });
 io.on("connection", (socket) =>
-  logger.info(`connected to socket: ${socket.id}`)
+  logger.info(`connected to socket: ${socket.id}`),
 );
 const startServer = () => {
   const { address, port } = httpServer.address();

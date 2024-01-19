@@ -1,10 +1,11 @@
-import { join } from 'node:path';
-import { createWriteStream } from 'node:fs';
-import Busboy from 'busboy';
+import { pipeline } from "node:stream/promises";
+import { join } from "node:path";
+import { createWriteStream } from "node:fs";
+import Busboy from "busboy";
 
-import { logger, pipelineAsync } from './util.js';
+import { logger } from "./util.js";
 
-const ON_UPLOAD_EVENT = 'file-uploaded';
+const ON_UPLOAD_EVENT = "file-uploaded";
 
 export class UploadHandler {
     #io;
@@ -23,7 +24,7 @@ export class UploadHandler {
     }
 
     #handleFileBytes(filename) {
-        async function * handleData(data) {
+        async function* handleData(data) {
             for await (const item of data) {
                 const size = item.length;
                 this.#io.to(this.#socketId).emit(ON_UPLOAD_EVENT, size);
@@ -34,12 +35,12 @@ export class UploadHandler {
     }
 
     async #onFile(fieldname, file, filename) {
-        const saveFileTo = join(__dirname, '../', 'downloads', filename);
+        const saveFileTo = join(__dirname, "../", "downloads", filename);
         logger.info(`Uploading ${saveFileTo}`);
-        await pipelineAsync(
-            file, 
-            this.#handleFileBytes.apply(this, [ filename ]), 
-            createWriteStream(saveFileTo)
+        await pipeline(
+            file,
+            this.#handleFileBytes.apply(this, [filename]),
+            createWriteStream(saveFileTo),
         );
         logger.info(`File [${filename}] finished`);
     }
