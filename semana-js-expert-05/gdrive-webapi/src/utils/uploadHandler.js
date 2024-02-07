@@ -6,14 +6,17 @@ import Busboy from "busboy";
 import { logger } from "./pinoLogger";
 
 export default class UploadHandler {
-  constructor({ io, socketId, downloadsFolder }) {
+  constructor({ io, socketId, downloadsFolder, messageTimeDelay = 200 }) {
     this.io = io;
     this.socketId = socketId;
     this.downloadsFolder = downloadsFolder;
     this.ON_UPLOAD_EVENT = "file-upload";
+    this.messageTimeDelay = messageTimeDelay;
   }
 
-  canExecute(lastExecution) {}
+  canExecute(lastExecution) {
+    return Date.now() - lastExecution >= this.messageTimeDelay;
+  }
 
   handleFileBytes(filename) {
     this.lastMessageSent = Date.now();
@@ -25,6 +28,7 @@ export default class UploadHandler {
         if (!this.canExecute(this.lastMessageSent)) {
           continue;
         }
+        this.lastMessageSent = Date.now();
         this.io
           .to(this.socketId)
           .emit(this.ON_UPLOAD_EVENT, { processedAlready, filename });
