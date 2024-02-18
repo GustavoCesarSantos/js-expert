@@ -6,6 +6,7 @@ const API_URL = "https://localhost:3000";
 
 const appController = new AppController({
   viewManager: new ViewManager(),
+  dragNDropManager: new DragNDropManager(),
   connectionManager: new ConnectionManager({
     apiUrl: API_URL,
   }),

@@ -2,6 +2,49 @@ export default class ViewManager {
   constructor() {
     this.tbody = document.getElementById("tbody");
     this.newFileBtn = document.getElementById("newFileBtn");
+    this.fileElem = document.getElementById("fileElem");
+    this.progressModal = document.getElementById("progressModal");
+    this.progressBar = document.getElementById("progressBar");
+    this.output = document.getElementById("output");
+    this.formatter = new Intl.DateTimeFormat("pt", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    this.modalInstance = {};
+  }
+
+  configureModal() {
+    this.modalInstance = M.Modal.init(this.progressModal, {
+      opacity: 0,
+      dismissable: false,
+      onOpenEnd() {
+        this.$overlay[0].remove();
+      },
+    });
+  }
+
+  openModal() {
+    this.modalInstance.open();
+  }
+
+  closeModal() {
+    this.modalInstance.close();
+  }
+
+  updateStatus(size) {
+    this.output.innerHTML = `Uploading in <b>${Math.floor(size)}%</b>`;
+    this.progressBar.value = size;
+  }
+
+  configureOnFileChange(fn) {
+    this.fileElem.onchange = (e) => fn(e.target.files);
+  }
+
+  configureFileBtnClick() {
+    this.newFileBtn.onclick = () => this.fileElem.click();
   }
 
   getIcon(file) {
@@ -28,9 +71,9 @@ export default class ViewManager {
     const template = (item) => `
     <tr>
         <td>${this.makeIcon(item.file)} ${item.file}</td>
-        <td>system_user</td>
-        <td>27 de agosto de 2021 14:10</td>
-        <td>65.6 GB</td>
+        <td>${item.owner}</td>
+        <td>${this.formatter.format(new Date(item.lastModified))}</td>
+        <td>${item.size}</td>
     </tr>
     `;
     this.tbody.innerHTML = files.map(template).join("");
